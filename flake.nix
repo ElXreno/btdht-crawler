@@ -65,7 +65,7 @@
         in
         rec {
           packages = {
-            ${name} = project.rootCrate.build;
+            ${name} = project.workspaceMembers.${name}.build;
             default = packages.${name};
           };
 
