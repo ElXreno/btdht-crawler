@@ -60,7 +60,7 @@ async fn main() {
     };
 
     let dht_clone = dht.clone();
-    let worker = worker::Worker::new(dht_clone);
+    let worker = worker::Worker::new(dht_clone).await;
 
     tokio::select! {
         _ = dht.run_event_loop() => {},

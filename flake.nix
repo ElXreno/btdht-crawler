@@ -27,6 +27,9 @@
           # Imports
           rust-toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
+          pkgsWithouOverlays = import nixpkgs {
+            inherit system;
+          };
           pkgs = import nixpkgs {
             inherit system;
             overlays = [
@@ -54,7 +57,7 @@
               };
             };
 
-          buildInputs = with pkgs; [ openssl.dev ];
+          buildInputs = with pkgs; [ openssl.dev sqlite ];
           nativeBuildInputs = with pkgs; [ rustc cargo pkg-config ];
           buildEnvVars = {
             PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
@@ -76,7 +79,9 @@
 
           devShells.default = pkgs.mkShell
             {
-              inherit buildInputs nativeBuildInputs;
+              inherit buildInputs;
+
+              nativeBuildInputs = with pkgsWithouOverlays; [ sea-orm-cli ] ++ nativeBuildInputs;
 
               shellHook = ''
                 # For JetBrains CLion
