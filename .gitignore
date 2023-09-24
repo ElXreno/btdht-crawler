@@ -1,0 +1,7 @@
+.directory
+/.direnv
+/.env
+/.idea
+/.rust-src
+/target
+result*
