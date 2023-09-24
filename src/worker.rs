@@ -1,7 +1,9 @@
 use log::info;
 use rustydht_lib::common::Id;
 use rustydht_lib::dht::DHT;
-use rustydht_lib::packets::{MessageBuilder, MessageType, ResponseSpecific};
+use rustydht_lib::packets::MessageBuilder;
+use rustydht_lib::packets::MessageType::Response;
+use rustydht_lib::packets::ResponseSpecific::SampleInfoHashesResponse;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::Duration;
@@ -70,18 +72,16 @@ impl Worker {
                             node.node.address, node.node.id, result
                         );
 
-                        match result {
-                            Ok(res) => match res.message_type {
-                                MessageType::Response(res) => match res {
-                                    ResponseSpecific::SampleInfoHashesResponse(info_hashes_res) => {
-                                        info_hashes_res.samples
-                                    }
-                                    _ => vec![],
-                                },
-                                _ => vec![],
-                            },
-                            _ => vec![],
+                        let mut infohashes = vec![];
+                        if let Ok(result) = result {
+                            if let Response(response) = result.message_type {
+                                if let SampleInfoHashesResponse(infohashes_response) = response {
+                                    infohashes = infohashes_response.samples;
+                                }
+                            }
                         }
+
+                        infohashes
                     });
                     jobs.push(job);
                 }
